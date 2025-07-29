@@ -5,5 +5,5 @@ const router = Router();
 router.post("/", messageService.guestSendMessage);
 router.get("/my-messages", Authentication(), messageService.getUserMessage);
 router.delete("/:messageId", Authentication(), messageService.deleteMessage);
-router.patch("/", Authentication(), messageService.addLike);
+router.patch("/", Authentication(), messageService.toggleLike);
 export default router;

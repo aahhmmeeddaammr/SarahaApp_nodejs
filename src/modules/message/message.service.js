@@ -105,7 +105,7 @@ export const deleteMessage = asyncHandler(async (req, res, next) => {
   return res.json({ message: "done" });
 });
 
-export const addLike = asyncHandler(async (req, res, next) => {
+export const toggleLike = asyncHandler(async (req, res, next) => {
   const { user } = req;
   const { messageId } = req.body;
   const message = await DbService.findById({
@@ -122,7 +122,7 @@ export const addLike = asyncHandler(async (req, res, next) => {
     model: MessageModel,
     filter: { _id: messageId },
     data: {
-      $set: { isLike: true },
+      $set: { isLike: !message.isLike },
     },
   });
   return res.json({ message: "done" });
