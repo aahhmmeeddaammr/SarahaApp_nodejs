@@ -59,7 +59,7 @@ export const signin = asyncHandler(async (req, res, next) => {
     },
   });
   if (!checkUser) {
-    return next(new Error("In-valid email or password", { cause: 404 }));
+    return next(new Error("In-valid email or password or in-valid provider", { cause: 404 }));
   }
   if (!checkUser.confirmEmail) {
     return next(new Error("Confirm Email First", { cause: 404 }));
