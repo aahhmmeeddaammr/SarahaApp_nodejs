@@ -42,7 +42,7 @@ export const signup = asyncHandler(async (req, res, next) => {
   setImmediate(() => {
     eventEmitter.emit("sendConfirmationEmail", {
       toEmail: email,
-      confirmationLink: `http://localhost:3001/auth/confirm-email?token=${confirmEmailToken}`,
+      confirmationLink: `https://saraha-app.cleverapps.io/auth/confirm-email?token=${confirmEmailToken}`,
       username: fullName,
     });
   });
