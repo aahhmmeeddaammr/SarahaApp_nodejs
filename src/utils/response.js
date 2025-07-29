@@ -8,5 +8,5 @@ export const asyncHandler = (fn) => {
 };
 
 export const globalErrorHandelar = (error, req, res, next) => {
-  return res.status(error.cause || 400).json({ message: error.message, stack: error.stack });
+  return res.status(error.cause || 400).json({ message: error.message, stack: process.env.MOOD == "dev" ? error.stack : undefined });
 };

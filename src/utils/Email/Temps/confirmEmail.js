@@ -1,4 +1,5 @@
-<!DOCTYPE html>
+export const conirmEmail = ({ username, confirmationLink }) => {
+  return `<!DOCTYPE html>
 <html lang="en">
     <head>
         <meta charset="UTF-8" />
@@ -55,19 +56,21 @@
                 <h1>Confirm Your Email</h1>
             </div>
             <div class="content">
-                <p>Hello {{username}},</p>
+                <p>Hello ${username},</p>
                 <p>Thank you for signing up! Please confirm your email address
                     by clicking the button below:</p>
                 <p style="text-align:center;">
-                    <a href="{{confirmationLink}}" class="button">Confirm
+                    <a href="${confirmationLink}" class="button">Confirm
                         Email</a>
                 </p>
                 <p>If you didn’t create an account, you can safely ignore this
                     email.</p>
             </div>
             <div class="footer">
-                &copy; {{year}} Your Company. All rights reserved.
+                &copy; ${new Date().getFullYear()} Your Company. All rights reserved.
             </div>
         </div>
     </body>
 </html>
+`;
+};

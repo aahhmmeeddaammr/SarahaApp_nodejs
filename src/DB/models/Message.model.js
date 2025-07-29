@@ -1,10 +1,11 @@
-const { default: mongoose } = require("mongoose");
-
+import mongoose from "mongoose";
 const schema = new mongoose.Schema(
   {
     content: { type: String, required: true },
     recipientId: { type: mongoose.Schema.Types.ObjectId, ref: "user" },
-    fromId: { type: mongoose.Schema.Types.ObjectId, ref: "user" },
+    fromName: { type: String },
+    isLike: { type: Boolean, default: false },
+    isRead: { type: Boolean, default: false },
   },
   {
     timestamps: true,
