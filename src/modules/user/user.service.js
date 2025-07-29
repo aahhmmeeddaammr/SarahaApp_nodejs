@@ -14,7 +14,7 @@ export const getProfileById = asyncHandler(async (req, res, next) => {
   const user = await DbService.findById({
     model: UserModel,
     filter: userId,
-    select: " firstName email picture userName",
+    select: " firstName lastName email picture userName",
   });
   if (!user) return next(new Error("User not found", { cause: 404 }));
 
