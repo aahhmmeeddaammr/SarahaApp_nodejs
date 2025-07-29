@@ -85,7 +85,7 @@ export const confirmEmail = asyncHandler(async (req, res, next) => {
   if (!user) return next(new Error("in-valid user", { cause: 404 }));
   user.confirmEmail = Date.now();
   await user.save();
-  return res.redirect("http://localhost:3000/auth");
+  return res.redirect("https://saraha-app-react-taupe.vercel.app/auth");
 });
 
 export const signupWithGmail = asyncHandler(async (req, res, next) => {
