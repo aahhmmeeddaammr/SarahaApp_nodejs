@@ -3,15 +3,16 @@ import authController from "./modules/auth/auth.controller.js";
 import userController from "./modules/user/user.controller.js";
 import messageController from "./modules/message/message.controller.js";
 import cors from "cors";
-import path from "node:path";
 import * as dotenv from "dotenv";
 import { connectDB } from "./DB/connection.db.js";
 import { globalErrorHandelar } from "./utils/response.js";
-dotenv.configDotenv({ path: path.join("./src/config/.env.local") });
+dotenv.configDotenv();
 export const bootstrap = async () => {
   const app = express();
   app.use(cors());
   const PORT = process.env.PORT || 3000;
+  const host = "0.0.0.0";
+
   // convert buffer data
   app.use(express.json());
   //DB
@@ -33,7 +34,7 @@ export const bootstrap = async () => {
   app.use(globalErrorHandelar);
 
   //Start Server
-  app.listen(PORT, () => {
-    console.log("Server is Running on port :: 3000");
+  app.listen(PORT, host, () => {
+    console.log(`listening on http://${host}:${PORT}`);
   });
 };
