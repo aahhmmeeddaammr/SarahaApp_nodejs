@@ -7,7 +7,7 @@ import * as dotenv from "dotenv";
 import { connectDB } from "./DB/connection.db.js";
 import { globalErrorHandelar } from "./utils/response.js";
 dotenv.configDotenv();
-console.log(process.env);
+console.log("process.env");
 
 export const bootstrap = async () => {
   const app = express();
