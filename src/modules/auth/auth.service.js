@@ -74,10 +74,11 @@ export const signin = asyncHandler(async (req, res, next) => {
   const credentials = getLoginCredentials({ user: checkUser });
   res.cookie("refreshToken", credentials.refreshToken, {
     httpOnly: true,
-    secure: false,
-    sameSite: "strict",
-    maxAge: 7 * 24 * 60 * 60 * 1000 * 4 * 12,
+    secure: !(process.env.MOOD === "dev"),
+    sameSite: !(process.env.MOOD === "dev") ? "none" : "lax",
+    maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
   });
+
   return res.json({ message: "Done", data: { ...credentials } });
 });
 
@@ -149,8 +150,8 @@ export const loginWithGmail = asyncHandler(async (req, res, next) => {
   const credentials = getLoginCredentials({ user });
   res.cookie("refreshToken", credentials.refreshToken, {
     httpOnly: true,
-    secure: false,
-    sameSite: "strict",
+    secure: true,
+    sameSite: "none",
     maxAge: 7 * 24 * 60 * 60 * 1000 * 4 * 12,
   });
   return res.json({ message: "Done", data: { ...credentials } });
