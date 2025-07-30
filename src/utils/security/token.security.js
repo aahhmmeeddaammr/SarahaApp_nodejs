@@ -29,14 +29,12 @@ export const getSignature = ({ bearer = signatureEnum.Bearer } = {}) => {
 };
 
 export const decodeToken = async ({ authorization, next, tokenType = tokenTypeEnum.access } = {}) => {
-  const [bearer, token] = authorization.split(" ") || [];
-  console.log({ bearer, token });
+  const [bearer, token] = authorization?.split(" ") || [];
 
   if (!bearer || !token) {
     return next(new Error("Missing or invalid token", { cause: 401 }));
   }
   const signatures = getSignature({ bearer });
-  console.log({ signatures });
 
   try {
     const { userId } = verifyToken({

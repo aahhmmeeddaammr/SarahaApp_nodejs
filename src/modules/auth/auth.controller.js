@@ -6,5 +6,5 @@ router.post("/singup", authService.signup);
 router.post("/singup/gmail", authService.signupWithGmail);
 router.post("/login", authService.signin);
 router.get("/confirm-email", authService.confirmEmail);
-
+router.delete("/logout", authService.logout);
 export default router;

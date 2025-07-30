@@ -6,12 +6,28 @@ import cors from "cors";
 import * as dotenv from "dotenv";
 import { connectDB } from "./DB/connection.db.js";
 import { globalErrorHandelar } from "./utils/response.js";
+import cookieParser from "cookie-parser";
 dotenv.configDotenv();
 console.log("process.env");
-
 export const bootstrap = async () => {
   const app = express();
-  app.use(cors());
+  app.use(cookieParser());
+  const allowedOrigins = ["http://localhost:3000", "https://saraha-app-react-taupe.vercel.app", "https://mail.google.com"];
+
+  app.use(
+    cors({
+      origin: function (origin, callback) {
+        if (!origin) return callback(null, true);
+        if (allowedOrigins.includes(origin)) {
+          return callback(null, true);
+        } else {
+          return callback(new Error("Not allowed by CORS"));
+        }
+      },
+      credentials: true,
+    })
+  );
+
   const PORT = process.env.PORT || 3000;
   const host = "0.0.0.0";
 

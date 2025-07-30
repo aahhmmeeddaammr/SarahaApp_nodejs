@@ -71,8 +71,14 @@ export const signin = asyncHandler(async (req, res, next) => {
   if (!checkHashedPassword) {
     return next(new Error("In-valid email or password", { cause: 404 }));
   }
-
-  return res.json({ message: "Done", data: { ...getLoginCredentials({ user: checkUser }) } });
+  const credentials = getLoginCredentials({ user: checkUser });
+  res.cookie("refreshToken", credentials.refreshToken, {
+    httpOnly: true,
+    secure: false,
+    sameSite: "strict",
+    maxAge: 7 * 24 * 60 * 60 * 1000 * 4 * 12,
+  });
+  return res.json({ message: "Done", data: { ...credentials } });
 });
 
 export const confirmEmail = asyncHandler(async (req, res, next) => {
@@ -140,5 +146,17 @@ export const loginWithGmail = asyncHandler(async (req, res, next) => {
   if (!user) {
     return next(new Error("in-valid login credintals", { cause: 404 }));
   }
-  return res.json({ message: "Done", data: { ...getLoginCredentials({ user }) } });
+  const credentials = getLoginCredentials({ user });
+  res.cookie("refreshToken", credentials.refreshToken, {
+    httpOnly: true,
+    secure: false,
+    sameSite: "strict",
+    maxAge: 7 * 24 * 60 * 60 * 1000 * 4 * 12,
+  });
+  return res.json({ message: "Done", data: { ...credentials } });
+});
+
+export const logout = asyncHandler((req, res, next) => {
+  res.clearCookie("refreshToken");
+  res.json({ message: "Done" });
 });

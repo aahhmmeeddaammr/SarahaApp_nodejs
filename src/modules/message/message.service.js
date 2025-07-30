@@ -45,13 +45,10 @@ export const getUserMessage = asyncHandler(async (req, res, next) => {
   const updatedMessages = [];
 
   for (const message of userMessages) {
-    console.log(message.content);
-
     const decoded = decodeData({
       cipherText: structuredClone(message.content),
       secret: process.env.MESSAGE_SECRET_KEY,
     });
-
     if (message.isLike) {
       metadata.numberOfLike++;
     }
