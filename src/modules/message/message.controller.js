@@ -1,8 +1,10 @@
 import { Router } from "express";
 import * as messageService from "./message.service.js";
 import { Authentication } from "../../middlewares/Authentication.middleware.js";
+import { validation } from "./../../middlewares/validation.middleware.js";
+import * as validators from "./message.validation.js";
 const router = Router();
-router.post("/", messageService.guestSendMessage);
+router.post("/", validation(validators.guestSendMessageSchema), messageService.guestSendMessage);
 router.get("/my-messages", Authentication(), messageService.getUserMessage);
 router.delete("/:messageId", Authentication(), messageService.deleteMessage);
 router.patch("/", Authentication(), messageService.toggleLike);

@@ -4,26 +4,48 @@ export const roleEnum = { user: "user", admin: "admin" };
 export const providerEnum = { google: "google", system: "system" };
 const schema = new mongoose.Schema(
   {
-    firstName: { type: String, required: true, minLength: [2, " min length is 2 chars"], maxLength: [20, "max length is 20 chars"] },
-    lastName: { type: String, required: true, minLength: [2, " min length is 2 chars"], maxLength: [20, "max length is 20 chars"] },
+    firstName: {
+      type: String,
+      required: true,
+      minLength: [2, " min length is 2 chars"],
+      maxLength: [20, "max length is 20 chars"],
+    },
+    lastName: {
+      type: String,
+      required: true,
+      minLength: [2, " min length is 2 chars"],
+      maxLength: [20, "max length is 20 chars"],
+    },
     email: { type: String, required: true, unique: true },
+
     password: {
       type: String,
       required: function () {
         return this.provider !== providerEnum.google;
       },
     },
+
     confirmEmail: { type: Date },
+
     phone: {
       type: String,
       required: function () {
         return this.provider !== providerEnum.google;
       },
     },
+    otp: String,
+    otpConfirmed: Date,
     gender: { type: String, enum: { values: Object.values(genderEnum) }, default: genderEnum.male },
     role: { type: String, enum: { values: Object.values(roleEnum) }, default: roleEnum.user },
-    provider: { type: String, enum: { values: Object.values(providerEnum), default: providerEnum.system }, defualt: providerEnum.system },
+    provider: {
+      type: String,
+      enum: { values: Object.values(providerEnum), default: providerEnum.system },
+      defualt: providerEnum.system,
+    },
     picture: { type: String },
+    bio: { type: String },
+    deletedAt: Date,
+    deletedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   },
   {
     timestamps: true,

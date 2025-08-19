@@ -6,6 +6,8 @@ import { generateToken, getLoginCredentials, verifyToken } from "../../utils/sec
 import { encodeData } from "../../utils/security/encode.securtiy.js";
 import { eventEmitter } from "../../utils/Email/emailEvents.js";
 import { OAuth2Client } from "google-auth-library";
+import { TokenModel } from "../../DB/models/Token.model.js";
+import { customAlphabet, nanoid } from "nanoid";
 
 const client = new OAuth2Client();
 
@@ -115,7 +117,7 @@ export const signupWithGmail = asyncHandler(async (req, res, next) => {
     }
     return next(new Error("Email alreday Exist", { cause: 409 }));
   }
-  const newUser = await DbService.create({
+  await DbService.create({
     model: UserModel,
     data: [
       {
@@ -157,7 +159,69 @@ export const loginWithGmail = asyncHandler(async (req, res, next) => {
   return res.json({ message: "Done", data: { ...credentials } });
 });
 
-export const logout = asyncHandler((req, res, next) => {
+export const logout = asyncHandler(async (req, res, next) => {
   res.clearCookie("refreshToken");
+  const { jti, user } = req;
+  await DbService.create({
+    model: TokenModel,
+    data: [{ jti, ownerId: user._id }],
+  });
   res.json({ message: "Done" });
+});
+
+export const forgetPassword = asyncHandler(async (req, res, next) => {
+  const { email } = req.body;
+  const otp = customAlphabet("1234567890", 6)();
+  const user = await DbService.findOneAndUpdate({
+    model: UserModel,
+    filter: { email },
+    data: {
+      otp: await hash({ plainText: otp, salt: 5 }),
+      $unset: { otpConfirmed: 1 },
+    },
+  });
+  if (!user) {
+    return next(new Error("in-valid user email", { cause: 404 }));
+  }
+  // send otp in email to user
+  eventEmitter.emit("sendOtpEmail", { email: user.email, otp, name: user.fullName });
+  return res.json({ message: "Done" });
+});
+
+export const verifyResetCode = asyncHandler(async (req, res, next) => {
+  const { email, otp } = req.body;
+  const user = await DbService.findOne({
+    model: UserModel,
+    filter: { email, otp: { $exists: true } },
+  });
+  const checkHashedOtp = compare({ hashed: user.otp, plainText: otp });
+  if (!checkHashedOtp) {
+    return next(new Error("In-valid otp"));
+  }
+  await DbService.findOneAndUpdate({
+    model: UserModel,
+    filter: { email },
+    data: {
+      $unset: { otp: 1 },
+      otpConfirmed: new Date(),
+    },
+  });
+  return res.json({ message: "Done" });
+});
+
+export const resetPassword = asyncHandler(async () => {
+  const { email, password } = req.body;
+  const newPasswordHash = await hash({ plainText: password });
+  const user = await DbService.findOneAndUpdate({
+    model: UserModel,
+    filter: { email },
+    data: {
+      password: newPasswordHash,
+      otpConfirmed: { $unset: 1 },
+    },
+  });
+  if (!user) {
+    return next(new Error("in-valid user email", { cause: 404 }));
+  }
+  return res.json({ message: "Done" });
 });

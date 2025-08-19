@@ -7,10 +7,11 @@ import * as dotenv from "dotenv";
 import { connectDB } from "./DB/connection.db.js";
 import { globalErrorHandelar } from "./utils/response.js";
 import cookieParser from "cookie-parser";
+import morgan from "morgan";
 dotenv.configDotenv();
-console.log("process.env");
 export const bootstrap = async () => {
   const app = express();
+  app.use(morgan("dev", { format: "dev" }));
   app.use(cookieParser());
   const allowedOrigins = ["http://localhost:3000", "https://saraha-app-react-taupe.vercel.app", "https://mail.google.com"];
 
@@ -29,7 +30,7 @@ export const bootstrap = async () => {
   );
 
   const PORT = process.env.PORT || 3000;
-  const host = "0.0.0.0";
+  const host = process.env.MOOD == "dev" ? "localhost" : "0.0.0.0";
 
   // convert buffer data
   app.use(express.json());

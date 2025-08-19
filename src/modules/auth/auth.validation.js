@@ -1,12 +1,49 @@
 import Joi from "joi";
+import { golbalFields } from "../../utils/security/globalFields.validation.js";
 
-const signupSchema = {
+export const signupSchema = {
   body: Joi.object()
     .keys({
-      fullName: Joi.string().required(),
-      password: Joi.string().regex(new RegExp(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/)),
-      email: Joi.string().email().required(),
-      phone: Joi.string().regex(new RegExp(/^[a-zA-Z]{1,}\d{0,}[a-zA-Z0-9]{1,}[@][a-z]{1,}(\.com|\.edu|\.net){1,3}$/)),
+      fullName: Joi.string().min(2).max(15).required(),
+      password: golbalFields.password.required(),
+      email: golbalFields.email.required(),
+      phone: golbalFields.phone.required(),
     })
     .required(),
+};
+
+export const signinSchema = {
+  body: Joi.object()
+    .keys({
+      password: golbalFields.password.required(),
+      email: golbalFields.email.required(),
+    })
+    .required(),
+};
+
+export const forgetPassword = {
+  body: Joi.object()
+    .keys({
+      email: golbalFields.email.required(),
+    })
+    .required(),
+};
+
+export const verifyResetCode = {
+  body: Joi.object()
+    .keys({
+      email: golbalFields.email.required(),
+      otp: Joi.string()
+        .length(6)
+        .pattern(/^\d{6}$/)
+        .required(),
+    })
+    .required(),
+};
+
+export const resetPassword = {
+  body: Joi.object().keys({
+    email : golbalFields.email.required(),
+    password : golbalFields.password.required(),
+  }),
 };

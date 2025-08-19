@@ -1,5 +1,6 @@
 import { transporter } from "./configuration.js";
 import { conirmEmail } from "./Temps/confirmEmail.js";
+import { otpEmailTemp } from "./Temps/otpEmail.js";
 
 export const sendEmail = ({ toEmail = "", subject = "", text = "" } = {}) => {
   const mailOptions = {
@@ -30,7 +31,7 @@ export const sendConfirmationEmail = ({ toEmail, username, confirmationLink }) =
 
 const sendEmailWithHTML = ({ toEmail = "", subject = "", html = "" } = {}) => {
   const mailOptions = {
-    from: process.env.NODEMAILER_EMAIL,
+    from: `Wishpr Team ❤️ ${process.env.NODEMAILER_EMAIL}`,
     to: toEmail,
     subject,
     html,
@@ -42,5 +43,14 @@ const sendEmailWithHTML = ({ toEmail = "", subject = "", html = "" } = {}) => {
     } else {
       console.log("Email sended Sucessfully");
     }
+  });
+};
+
+export const sendOTPEmail = ({ email = "", otp = "", name = "" } = {}) => {
+  let html = otpEmailTemp({ name, otp });
+  sendEmailWithHTML({
+    toEmail: email,
+    subject: "Please confirm your email",
+    html,
   });
 };
