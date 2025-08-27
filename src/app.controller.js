@@ -1,16 +1,23 @@
 import express from "express";
+import cors from "cors";
+import cookieParser from "cookie-parser";
+import * as dotenv from "dotenv";
+import morgan from "morgan";
+import cron from "node-cron";
+import helmet from "helmet";
+
 import authController from "./modules/auth/auth.controller.js";
 import userController from "./modules/user/user.controller.js";
 import messageController from "./modules/message/message.controller.js";
-import cors from "cors";
-import * as dotenv from "dotenv";
+
 import { connectDB } from "./DB/connection.db.js";
 import { globalErrorHandelar } from "./utils/response.js";
-import cookieParser from "cookie-parser";
-import morgan from "morgan";
+
 dotenv.configDotenv();
+
 export const bootstrap = async () => {
   const app = express();
+  app.use(helmet())
   app.use(morgan("dev", { format: "dev" }));
   app.use(cookieParser());
   const allowedOrigins = ["http://localhost:3000", "https://saraha-app-react-taupe.vercel.app", "https://mail.google.com"];
@@ -56,4 +63,7 @@ export const bootstrap = async () => {
   app.listen(PORT, host, () => {
     console.log(`listening on http://${host}:${PORT}`);
   });
+  // cron.schedule("* * * * *", () => {
+  //   console.log("Running a task every minute");
+  // });
 };

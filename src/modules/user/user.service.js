@@ -51,7 +51,6 @@ export const refreshAccessToken = asyncHandler(async (req, res, next) => {
 
 export const updateProfileData = asyncHandler(async (req, res, next) => {
   const { _id } = req.user;
-  console.log(req.body);
 
   const user = await DbService.findOneAndUpdate({
     model: UserModel,
@@ -116,7 +115,9 @@ export const deleteAccount = asyncHandler(async (req, res, next) => {
 });
 
 export const updateProfileImage = asyncHandler(async (req, res, next) => {
-  const cloudUpload = await cloud().uploader.upload(req.file.path);
+  const cloudUpload = await cloud().uploader.upload(req.file.path, {
+    folder: `SARAHA/user/${req.user._id}`,
+  });
   if (req.user.picture && /^https:\/\/res\.cloudinary\.com/.test(req.user.picture)) {
   }
   const user = await DbService.findOneAndUpdate({

@@ -7,7 +7,7 @@ import { encodeData } from "../../utils/security/encode.securtiy.js";
 import { eventEmitter } from "../../utils/Email/emailEvents.js";
 import { OAuth2Client } from "google-auth-library";
 import { TokenModel } from "../../DB/models/Token.model.js";
-import { customAlphabet, nanoid } from "nanoid";
+import { customAlphabet } from "nanoid";
 
 const client = new OAuth2Client();
 
@@ -214,10 +214,10 @@ export const resetPassword = asyncHandler(async () => {
   const newPasswordHash = await hash({ plainText: password });
   const user = await DbService.findOneAndUpdate({
     model: UserModel,
-    filter: { email },
+    filter: { email, $exists: { otpConfirmed: 1 } },
     data: {
       password: newPasswordHash,
-      otpConfirmed: { $unset: 1 },
+      $unset: { otpConfirmed: 1 },
     },
   });
   if (!user) {
