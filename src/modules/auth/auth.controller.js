@@ -11,6 +11,6 @@ router.post("/login", validation(validators.signinSchema), authService.signin);
 router.get("/confirm-email", authService.confirmEmail);
 router.post("/forget-password", validation(validators.forgetPassword), authService.forgetPassword);
 router.post("/verify-otp", validation(validators.verifyResetCode), authService.verifyResetCode);
-router.patch("/reset-password", validation(), authService.resetPassword);
+router.patch("/reset-password", authService.resetPassword);
 router.delete("/logout", Authentication(), authService.logout);
 export default router;

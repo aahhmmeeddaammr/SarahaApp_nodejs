@@ -12,12 +12,13 @@ import messageController from "./modules/message/message.controller.js";
 
 import { connectDB } from "./DB/connection.db.js";
 import { globalErrorHandelar } from "./utils/response.js";
+import { TokenModel } from "./DB/models/Token.model.js";
 
 dotenv.configDotenv();
 
 export const bootstrap = async () => {
   const app = express();
-  app.use(helmet())
+  app.use(helmet());
   app.use(morgan("dev", { format: "dev" }));
   app.use(cookieParser());
   const allowedOrigins = ["http://localhost:3000", "https://saraha-app-react-taupe.vercel.app", "https://mail.google.com"];
@@ -63,7 +64,14 @@ export const bootstrap = async () => {
   app.listen(PORT, host, () => {
     console.log(`listening on http://${host}:${PORT}`);
   });
-  // cron.schedule("* * * * *", () => {
-  //   console.log("Running a task every minute");
-  // });
+
+  // Runs every day at midnight
+  cron.schedule("0 0 * * *", async () => {
+    try {
+      const result = await TokenModel.deleteMany({ expiredAt: { $lte: new Date() } });
+      console.log(`Cron Job: Deleted ${result.deletedCount} expired tokens`);
+    } catch (error) {
+      console.error("Error deleting expired tokens:", error);
+    }
+  });
 };

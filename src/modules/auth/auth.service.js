@@ -161,11 +161,22 @@ export const loginWithGmail = asyncHandler(async (req, res, next) => {
 
 export const logout = asyncHandler(async (req, res, next) => {
   res.clearCookie("refreshToken");
+
   const { jti, user } = req;
+
+  const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+
   await DbService.create({
     model: TokenModel,
-    data: [{ jti, ownerId: user._id }],
+    data: [
+      {
+        jti,
+        ownerId: user._id,
+        expiredAt: expiresAt,
+      },
+    ],
   });
+
   res.json({ message: "Done" });
 });
 
@@ -209,12 +220,14 @@ export const verifyResetCode = asyncHandler(async (req, res, next) => {
   return res.json({ message: "Done" });
 });
 
-export const resetPassword = asyncHandler(async () => {
+export const resetPassword = asyncHandler(async (req, res, next) => {
   const { email, password } = req.body;
+  console.log({ email, password });
+
   const newPasswordHash = await hash({ plainText: password });
   const user = await DbService.findOneAndUpdate({
     model: UserModel,
-    filter: { email, $exists: { otpConfirmed: 1 } },
+    filter: { email, otpConfirmed: { $exists: 1 } },
     data: {
       password: newPasswordHash,
       $unset: { otpConfirmed: 1 },
