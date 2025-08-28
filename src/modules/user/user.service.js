@@ -108,17 +108,21 @@ export const deleteAccount = asyncHandler(async (req, res, next) => {
 });
 
 export const updateAccount = asyncHandler(async (req, res, next) => {
-  const cloudUpload = await cloud().uploader.upload(req.file.path, {
-    folder: `SARAHA/user/${req.user._id}`,
-  });
-  if (req.user.picture && /^https:\/\/res\.cloudinary\.com/.test(req.user.picture)) {
-    deleteImage(req.user.picture);
+  const updatedData = {};
+  if (req.file) {
+    const cloudUpload = await cloud().uploader.upload(req.file.path, {
+      folder: `SARAHA/user/${req.user._id}`,
+    });
+    if (req.user.picture && /^https:\/\/res\.cloudinary\.com/.test(req.user.picture)) {
+      deleteImage(req.user.picture);
+    }
+    updatedData = { $set: { picture: cloudUpload.url } };
   }
   const user = await DbService.findOneAndUpdate({
     model: UserModel,
     filter: { _id: req.user._id },
     data: {
-      $set: { picture: cloudUpload.url },
+      ...updatedData,
       ...req.body,
     },
   });
