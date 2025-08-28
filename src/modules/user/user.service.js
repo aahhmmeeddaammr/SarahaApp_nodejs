@@ -4,7 +4,7 @@ import * as DbService from "../../DB/db.service.js";
 import { roleEnum, UserModel } from "../../DB/models/User.model.js";
 import { compare, hash } from "../../utils/security/hash.security.js";
 import { getLoginCredentials } from "../../utils/security/token.security.js";
-import { cloud } from "../../utils/multer/cloudnary.js";
+import { cloud, deleteImage } from "../../utils/multer/cloudnary.js";
 
 export const getProfile = asyncHandler(async (req, res, next) => {
   req.user.phone = decodeData({ cipherText: req.user.phone });
@@ -50,13 +50,6 @@ export const refreshAccessToken = asyncHandler(async (req, res, next) => {
 });
 
 export const updateProfileData = asyncHandler(async (req, res, next) => {
-  const { _id } = req.user;
-
-  const user = await DbService.findOneAndUpdate({
-    model: UserModel,
-    filter: { _id },
-    data: req.body,
-  });
   return res.json({ message: "Done", data: user });
 });
 
@@ -114,17 +107,19 @@ export const deleteAccount = asyncHandler(async (req, res, next) => {
   return res.json({ message: "Done" });
 });
 
-export const updateProfileImage = asyncHandler(async (req, res, next) => {
+export const updateAccount = asyncHandler(async (req, res, next) => {
   const cloudUpload = await cloud().uploader.upload(req.file.path, {
     folder: `SARAHA/user/${req.user._id}`,
   });
   if (req.user.picture && /^https:\/\/res\.cloudinary\.com/.test(req.user.picture)) {
+    deleteImage(req.user.picture);
   }
   const user = await DbService.findOneAndUpdate({
     model: UserModel,
     filter: { _id: req.user._id },
     data: {
-      $set: { picture: cloudUpload.secure_url },
+      $set: { picture: cloudUpload.url },
+      ...req.body,
     },
   });
   if (!user) {

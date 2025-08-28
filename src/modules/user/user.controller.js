@@ -10,7 +10,6 @@ import { cloudFileUpload } from "../../utils/multer/fileUpload.multer.js";
 const router = Router();
 router.get("/", Authentication(), userService.getProfile);
 router.get("/profile/:userId", validation(validators.getProfileById), userService.getProfileById);
-router.patch("/", Authentication(), validation(validators.updateProfileData), userService.updateProfileData);
 router.get("/refresh-token", Authentication({ tokenType: tokenTypeEnum.refresh }), userService.refreshAccessToken);
 router.patch("/update-password", validation(validators.updateUserPassword), Authentication(), userService.updateUserPassword);
 router.delete("/freeze-account{/:userId}", Authentication(), userService.freezAccount);
@@ -26,5 +25,11 @@ router.delete(
   Authorization({ accessRoles: userEndpoints.deleteAccount }),
   userService.deleteAccount
 );
-router.post("/upload-image", Authentication(), cloudFileUpload().single("image"), userService.updateProfileImage);
+router.patch(
+  "/update-account",
+  Authentication(),
+  validation(validators.updateProfileData),
+  cloudFileUpload().single("image"),
+  userService.updateAccount
+);
 export default router;
